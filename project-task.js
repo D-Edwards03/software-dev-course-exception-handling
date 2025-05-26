@@ -33,12 +33,18 @@ const readlineSync = require('readline-sync');
 let animals = [];
 let fees = [];
 function addAnimal(name, fee) {
-    if (!name || fee < 0) {
-        throw new Error("Invalid animal name or adoption fee!");
+  //Validate name (must be a non-empty, non-numeric string)
+    if (!name || typeof name !== 'string' || !isNaN(name)) {
+        throw new Error("Invalid animal name! Name cannot be empty or a number.");
+    }
+  //Validate fee (must be a non-negative number)
+    if (typeof fee !== 'number' || fee < 0) {
+        throw new Error("Invalid adoption fee! Fee must be a non-negative number.");
     }
     animals.push(name);
     fees.push(fee);
 }
+
 function getAdoptionFee(animalName) {
     let index = animals.indexOf(animalName);
     if (index === -1) {
@@ -57,11 +63,22 @@ while (true) {
     if (action === "add") {
         let animal = readlineSync.question("Enter the animal's name: ");
         let fee = Number(readlineSync.question("Enter the adoption fee: "));
+      //try/catch to handle potential erors from addAnimal
+        try {
         addAnimal(animal, fee);
         console.log(`${animal} added with a fee of $${fee}.`);
+        } catch (err) {
+            console.error(`Error: ${err.message}`);
+        }
     } else if (action === "fee") {
         let animal = readlineSync.question("Enter the animal's name to find its adoption fee: ");
-        console.log(`${animal}'s adoption fee is $${getAdoptionFee(animal)}.`);
+      //try/catch to handle potential errors from getAdoptionFee
+        try{
+        let fee = getAdoptionFee(animal);
+        console.log(`${animal}'s adoption fee is $${fee}.`);
+        } catch (err) {
+            console.error(`Error: ${err.message}`);
+        }
     } else {
         console.log("Invalid action. Please choose 'add', 'fee', or 'exit'.");
     }
